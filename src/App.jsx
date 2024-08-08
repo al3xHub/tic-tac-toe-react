@@ -6,8 +6,16 @@ import { TURNS, WINNER_COMBOS } from './ constants.jsx'
 
 function App() {
 
-  const [board, setBoard] = useState(Array(9).fill(null))
-  const [turn, setTurn] = useState(TURNS.X)
+  const [board, setBoard] = useState(()=>{
+    const boardFromStorage = window.localStorage.getItem('board')
+    if(boardFromStorage) return JSON.parse(boardFromStorage)
+      return Array(9).fill(null)
+  })
+
+  const [turn, setTurn] = useState(()=>{
+    const turnFromStorage = window.localStorage.getItem('turn')
+    return turnFromStorage ?? TURNS.X
+  })
 
   const checkWinner = (boardToCheck) => {
     for (const combo of WINNER_COMBOS){
@@ -25,6 +33,10 @@ function App() {
     setBoard(Array(9).fill(null))
     setTurn(TURNS.X)
     setWinner(null)
+
+    window.localStorage.removeItem('board')
+    window.localStorage.removeItem('turn')
+
   }
 
   const checkEndGame = (newBoard)=>{
@@ -43,6 +55,9 @@ function App() {
 
     const newTurn = turn === TURNS.X ? TURNS.O : TURNS.X
     setTurn(newTurn)
+
+    window.localStorage.setItem('board', JSON.stringify(newBoard))
+    window.localStorage.setItem('turn', newTurn)
 
     const newWinner = checkWinner(newBoard)
 
